@@ -261,6 +261,28 @@ surface_material_override/0 = SubResource("Mat_wall")
 [node name="Collision" type="CollisionShape3D" parent="Walls/RightWall"]
 shape = SubResource("BoxShape3D_wall_side")
 
+; --- EXIT CORRIDOR (connects to next room) ---
+[node name="ExitCorridor" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7)
+
+[node name="Floor" type="CSGBox3D" parent="ExitCorridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+size = Vector3(4, 0.5, 4)
+material = SubResource("Mat_floor")
+
+[node name="EndWall" type="StaticBody3D" parent="ExitCorridor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -2)
+collision_layer = 3
+
+[node name="Mesh" type="CSGBox3D" parent="ExitCorridor/EndWall"]
+size = Vector3(4, 4, 0.5)
+material = SubResource("Mat_wall")
+
+[node name="Sign" type="CSGBox3D" parent="ExitCorridor/EndWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.3)
+size = Vector3(2, 1, 0.1)
+material = SubResource("Mat_circuit_glow")
+
 ; --- EXIT ARCHWAY (The glowing portal doorway) ---
 [node name="ExitArchway" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
