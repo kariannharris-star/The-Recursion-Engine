@@ -2,7 +2,6 @@
 
 [ext_resource type="PackedScene" uid="uid://player3d001" path="res://scenes/player/player_3d.tscn" id="1_player"]
 [ext_resource type="Script" path="res://scripts/objects/pushable_block_3d.gd" id="2_block"]
-[ext_resource type="Script" path="res://scripts/objects/glyph_fountain.gd" id="3_fountain"]
 
 ; === COLLISION SHAPES ===
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
@@ -131,9 +130,6 @@ func _ready() -> void:
 	print(\"Ancient mechanisms hum with dormant power...\")
 	print(\"A glowing archway beckons forward.\")
 	print(\"\")
-
-	await get_tree().create_timer(2.0).timeout
-	# Glyph discovery moved to fountain interaction
 
 func get_scale_restrictions() -> Dictionary:
 	return { \"micro\": true, \"macro\": false }
@@ -344,11 +340,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.35)
 size = Vector3(0.1, 3.5, 0.05)
 material = SubResource("Mat_circuit_dim")
 
-; --- CENTRAL FOUNTAIN POOL (Interactive - reveals glyph) ---
+; --- CENTRAL FOUNTAIN POOL (Decorative) ---
 [node name="FountainPool" type="StaticBody3D" parent="."]
 collision_layer = 2
 collision_mask = 0
-script = ExtResource("3_fountain")
 
 [node name="PoolRim" type="CSGTorus3D" parent="FountainPool"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
@@ -383,24 +378,6 @@ material = SubResource("Mat_circuit_glow")
 [node name="Collision" type="CollisionShape3D" parent="FountainPool"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("CylinderShape3D_pool")
-
-; Interaction area for player detection
-[node name="InteractArea" type="Area3D" parent="FountainPool"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
-collision_layer = 6
-collision_mask = 0
-
-[node name="InteractCollision" type="CollisionShape3D" parent="FountainPool/InteractArea"]
-shape = SubResource("CylinderShape3D_pool")
-
-; Glyph display (hidden until interaction)
-[node name="GlyphDisplay" type="Node3D" parent="FountainPool"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
-
-[node name="GlyphPlate" type="CSGCylinder3D" parent="FountainPool/GlyphDisplay"]
-radius = 0.5
-height = 0.08
-material = SubResource("Mat_circuit_glow")
 
 ; --- BOULDERS / ROCKS (like concept art) ---
 [node name="Boulders" type="Node3D" parent="."]
@@ -469,22 +446,6 @@ mesh = SubResource("Mesh_boulder")
 surface_material_override/0 = SubResource("Mat_boulder")
 
 [node name="Collision" type="CollisionShape3D" parent="Boulders/Boulder6"]
-shape = SubResource("BoxShape3D_boulder")
-
-; --- BLOCKING BOULDER (pushable to clear exit) ---
-[node name="BlockingBoulder" type="CharacterBody3D" parent="Boulders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.5)
-collision_layer = 3
-collision_mask = 3
-script = ExtResource("2_block")
-
-[node name="Mesh" type="CSGSphere3D" parent="Boulders/BlockingBoulder"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
-radius = 0.9
-material = SubResource("Mat_boulder")
-
-[node name="Collision" type="CollisionShape3D" parent="Boulders/BlockingBoulder"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 shape = SubResource("BoxShape3D_boulder")
 
 ; --- DIVINE BEAST METAL GROOVES ---

@@ -12,8 +12,6 @@ class_name ScalePedestal
 ## Does this pedestal allow shifting to Macro scale?
 @export var allows_macro: bool = true
 
-## Glyphs displayed on this pedestal (for learning)
-@export var displayed_glyphs: Array[String] = []
 
 # =============================================================================
 # STATE
@@ -128,11 +126,6 @@ func _on_body_entered(body: Node2D) -> void:
 
 		print("[ScalePedestal] Player stepped on pedestal")
 		print("[ScalePedestal] Press Shift to change scale")
-
-		# Discover any glyphs on this pedestal
-		for glyph_id in displayed_glyphs:
-			if GlyphDatabase:
-				GlyphDatabase.discover_glyph(glyph_id, name)
 
 func _on_body_exited(body: Node2D) -> void:
 	if body is Player:
