@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://player3d001" path="res://scenes/player/player_3d.tscn" id="1_player"]
 [ext_resource type="Script" path="res://scripts/objects/pushable_block_3d.gd" id="2_block"]
+[ext_resource type="Script" path="res://scripts/objects/glyph_fountain.gd" id="3_fountain"]
 
 ; === COLLISION SHAPES ===
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
@@ -343,8 +344,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.35)
 size = Vector3(0.1, 3.5, 0.05)
 material = SubResource("Mat_circuit_dim")
 
-; --- CENTRAL FOUNTAIN POOL ---
-[node name="FountainPool" type="Node3D" parent="."]
+; --- CENTRAL FOUNTAIN POOL (Interactive - reveals glyph) ---
+[node name="FountainPool" type="StaticBody3D" parent="."]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("3_fountain")
 
 [node name="PoolRim" type="CSGTorus3D" parent="FountainPool"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
@@ -376,11 +380,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 radius = 0.2
 material = SubResource("Mat_circuit_glow")
 
-[node name="PoolCollision" type="StaticBody3D" parent="FountainPool"]
-collision_layer = 2
-
-[node name="Collision" type="CollisionShape3D" parent="FountainPool/PoolCollision"]
+[node name="Collision" type="CollisionShape3D" parent="FountainPool"]
 shape = SubResource("CylinderShape3D_pool")
+
+; Glyph display (hidden until interaction)
+[node name="GlyphDisplay" type="Node3D" parent="FountainPool"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+
+[node name="GlyphPlate" type="CSGCylinder3D" parent="FountainPool/GlyphDisplay"]
+radius = 0.4
+height = 0.05
+material = SubResource("Mat_circuit_glow")
 
 ; --- BOULDERS / ROCKS (like concept art) ---
 [node name="Boulders" type="Node3D" parent="."]
@@ -450,6 +460,104 @@ surface_material_override/0 = SubResource("Mat_boulder")
 
 [node name="Collision" type="CollisionShape3D" parent="Boulders/Boulder6"]
 shape = SubResource("BoxShape3D_boulder")
+
+; --- BLOCKING BOULDER (blocks exit until puzzle solved) ---
+[node name="BlockingBoulder" type="StaticBody3D" parent="Boulders"]
+transform = Transform3D(2.0, 0, 0, 0, 1.8, 0, 0, 0, 2.0, 0, 0.8, -4)
+collision_layer = 3
+
+[node name="Mesh" type="MeshInstance3D" parent="Boulders/BlockingBoulder"]
+mesh = SubResource("Mesh_boulder")
+surface_material_override/0 = SubResource("Mat_boulder")
+
+[node name="Collision" type="CollisionShape3D" parent="Boulders/BlockingBoulder"]
+shape = SubResource("BoxShape3D_boulder")
+
+; --- DIVINE BEAST METAL GROOVES ---
+[node name="MetalGrooves" type="Node3D" parent="."]
+
+; Left wall metal panel
+[node name="LeftPanel" type="CSGBox3D" parent="MetalGrooves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.9, 2.5, -1)
+size = Vector3(0.1, 2.5, 3)
+material = SubResource("Mat_pillar")
+
+[node name="LeftGroove1" type="CSGBox3D" parent="MetalGrooves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.85, 2.5, -1.5)
+size = Vector3(0.08, 2.2, 0.08)
+material = SubResource("Mat_circuit_dim")
+
+[node name="LeftGroove2" type="CSGBox3D" parent="MetalGrooves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.85, 2.5, -0.5)
+size = Vector3(0.08, 2.2, 0.08)
+material = SubResource("Mat_circuit_dim")
+
+[node name="LeftGroove3" type="CSGBox3D" parent="MetalGrooves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.85, 3.5, -1)
+size = Vector3(0.08, 0.08, 2.8)
+material = SubResource("Mat_circuit_dim")
+
+[node name="LeftGroove4" type="CSGBox3D" parent="MetalGrooves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.85, 1.5, -1)
+size = Vector3(0.08, 0.08, 2.8)
+material = SubResource("Mat_circuit_dim")
+
+; Right wall metal panel
+[node name="RightPanel" type="CSGBox3D" parent="MetalGrooves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.9, 2.5, -1)
+size = Vector3(0.1, 2.5, 3)
+material = SubResource("Mat_pillar")
+
+[node name="RightGroove1" type="CSGBox3D" parent="MetalGrooves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.85, 2.5, -1.5)
+size = Vector3(0.08, 2.2, 0.08)
+material = SubResource("Mat_circuit_dim")
+
+[node name="RightGroove2" type="CSGBox3D" parent="MetalGrooves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.85, 2.5, -0.5)
+size = Vector3(0.08, 2.2, 0.08)
+material = SubResource("Mat_circuit_dim")
+
+[node name="RightGroove3" type="CSGBox3D" parent="MetalGrooves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.85, 3.5, -1)
+size = Vector3(0.08, 0.08, 2.8)
+material = SubResource("Mat_circuit_dim")
+
+[node name="RightGroove4" type="CSGBox3D" parent="MetalGrooves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.85, 1.5, -1)
+size = Vector3(0.08, 0.08, 2.8)
+material = SubResource("Mat_circuit_dim")
+
+; Back wall metal panels near archway
+[node name="BackPanelL" type="CSGBox3D" parent="MetalGrooves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2.5, -5)
+size = Vector3(1.5, 2.5, 0.1)
+material = SubResource("Mat_pillar")
+
+[node name="BackGrooveL1" type="CSGBox3D" parent="MetalGrooves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3, 2.5, -4.95)
+size = Vector3(0.08, 2.2, 0.08)
+material = SubResource("Mat_circuit_dim")
+
+[node name="BackGrooveL2" type="CSGBox3D" parent="MetalGrooves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.7, 2.5, -4.95)
+size = Vector3(0.08, 2.2, 0.08)
+material = SubResource("Mat_circuit_dim")
+
+[node name="BackPanelR" type="CSGBox3D" parent="MetalGrooves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.5, -5)
+size = Vector3(1.5, 2.5, 0.1)
+material = SubResource("Mat_pillar")
+
+[node name="BackGrooveR1" type="CSGBox3D" parent="MetalGrooves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.3, 2.5, -4.95)
+size = Vector3(0.08, 2.2, 0.08)
+material = SubResource("Mat_circuit_dim")
+
+[node name="BackGrooveR2" type="CSGBox3D" parent="MetalGrooves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7, 2.5, -4.95)
+size = Vector3(0.08, 2.2, 0.08)
+material = SubResource("Mat_circuit_dim")
 
 ; --- PUSHABLE BLOCK ---
 [node name="PushableBlock" type="CharacterBody3D" parent="."]
