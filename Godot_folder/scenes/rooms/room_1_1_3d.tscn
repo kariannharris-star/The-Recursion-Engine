@@ -381,15 +381,25 @@ radius = 0.2
 material = SubResource("Mat_circuit_glow")
 
 [node name="Collision" type="CollisionShape3D" parent="FountainPool"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CylinderShape3D_pool")
+
+; Interaction area for player detection
+[node name="InteractArea" type="Area3D" parent="FountainPool"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+collision_layer = 6
+collision_mask = 0
+
+[node name="InteractCollision" type="CollisionShape3D" parent="FountainPool/InteractArea"]
 shape = SubResource("CylinderShape3D_pool")
 
 ; Glyph display (hidden until interaction)
 [node name="GlyphDisplay" type="Node3D" parent="FountainPool"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
 [node name="GlyphPlate" type="CSGCylinder3D" parent="FountainPool/GlyphDisplay"]
-radius = 0.4
-height = 0.05
+radius = 0.5
+height = 0.08
 material = SubResource("Mat_circuit_glow")
 
 ; --- BOULDERS / ROCKS (like concept art) ---
@@ -461,16 +471,20 @@ surface_material_override/0 = SubResource("Mat_boulder")
 [node name="Collision" type="CollisionShape3D" parent="Boulders/Boulder6"]
 shape = SubResource("BoxShape3D_boulder")
 
-; --- BLOCKING BOULDER (blocks exit until puzzle solved) ---
-[node name="BlockingBoulder" type="StaticBody3D" parent="Boulders"]
-transform = Transform3D(2.0, 0, 0, 0, 1.8, 0, 0, 0, 2.0, 0, 0.8, -4)
+; --- BLOCKING BOULDER (pushable to clear exit) ---
+[node name="BlockingBoulder" type="CharacterBody3D" parent="Boulders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.5)
 collision_layer = 3
+collision_mask = 3
+script = ExtResource("2_block")
 
-[node name="Mesh" type="MeshInstance3D" parent="Boulders/BlockingBoulder"]
-mesh = SubResource("Mesh_boulder")
-surface_material_override/0 = SubResource("Mat_boulder")
+[node name="Mesh" type="CSGSphere3D" parent="Boulders/BlockingBoulder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+radius = 0.9
+material = SubResource("Mat_boulder")
 
 [node name="Collision" type="CollisionShape3D" parent="Boulders/BlockingBoulder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 shape = SubResource("BoxShape3D_boulder")
 
 ; --- DIVINE BEAST METAL GROOVES ---
