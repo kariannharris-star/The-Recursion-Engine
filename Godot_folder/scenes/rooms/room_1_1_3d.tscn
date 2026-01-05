@@ -221,16 +221,23 @@ material = SubResource("Mat_circuit_dim")
 ; --- WALLS (Cave-like enclosure) ---
 [node name="Walls" type="Node3D" parent="."]
 
-[node name="BackWall" type="StaticBody3D" parent="Walls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -5.4)
+; Back wall LEFT side (gap in middle for door)
+[node name="BackWallLeft" type="StaticBody3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 3, -5.4)
 collision_layer = 3
 
-[node name="Mesh" type="MeshInstance3D" parent="Walls/BackWall"]
-mesh = SubResource("Mesh_wall_back")
-surface_material_override/0 = SubResource("Mat_wall")
+[node name="Mesh" type="CSGBox3D" parent="Walls/BackWallLeft"]
+size = Vector3(4, 6, 0.8)
+material = SubResource("Mat_wall")
 
-[node name="Collision" type="CollisionShape3D" parent="Walls/BackWall"]
-shape = SubResource("BoxShape3D_wall_back")
+; Back wall RIGHT side (gap in middle for door)
+[node name="BackWallRight" type="StaticBody3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 3, -5.4)
+collision_layer = 3
+
+[node name="Mesh" type="CSGBox3D" parent="Walls/BackWallRight"]
+size = Vector3(4, 6, 0.8)
+material = SubResource("Mat_wall")
 
 [node name="LeftWall" type="StaticBody3D" parent="Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 3, 0)
