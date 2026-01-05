@@ -1,0 +1,102 @@
+[gd_scene load_steps=2 format=3 uid="uid://main3d001"]
+
+[sub_resource type="GDScript" id="GDScript_main"]
+script/source = "extends Node3D
+## Main 3D Game Scene
+
+var current_room: Node3D = null
+var player: CharacterBody3D = null
+
+func _ready() -> void:
+	# Load the first room
+	load_room(\"room_1_1_3d\")
+
+	# Connect to game manager
+	if GameManager:
+		GameManager.scale_changed.connect(_on_scale_changed)
+		GameManager.room_changed.connect(_on_room_changed)
+
+	print(\"════════════════════════════════════════\")
+	print(\"   THE RECURSION ENGINE - 3D Edition\")
+	print(\"════════════════════════════════════════\")
+	print(\"\")
+	print(\"Controls:\")
+	print(\"  WASD        - Move\")
+	print(\"  E/Space     - Interact\")
+	print(\"  Shift       - Scale shift (on pedestal)\")
+	print(\"  Q           - Open Notebook\")
+	print(\"  Esc         - Pause\")
+	print(\"\")
+	print(\"════════════════════════════════════════\")
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed(\"pause\"):
+		if GameManager.current_state == GameManager.GameState.PAUSED:
+			GameManager.resume_game()
+		else:
+			GameManager.pause_game()
+
+func load_room(room_id: String) -> void:
+	# Clear current room
+	if current_room:
+		current_room.queue_free()
+		await get_tree().process_frame
+
+	# Load new room
+	var room_path = \"res://scenes/rooms/%s.tscn\" % room_id
+	var room_scene = load(room_path)
+
+	if room_scene:
+		current_room = room_scene.instantiate()
+		add_child(current_room)
+
+		# Find player in the room
+		player = current_room.get_node_or_null(\"Player3D\")
+		if not player:
+			# Try to find any Player3D
+			for child in current_room.get_children():
+				if child is CharacterBody3D and child.has_method(\"spawn_at\"):
+					player = child
+					break
+
+		# Find spawn point
+		var spawn = current_room.get_node_or_null(\"SpawnPoint\")
+		if spawn and player:
+			player.global_position = spawn.global_position
+
+		# Apply room restrictions
+		if current_room.has_method(\"get_scale_restrictions\") and player:
+			var restrictions = current_room.get_scale_restrictions()
+			player.set_room_restrictions(restrictions.get(\"micro\", true), restrictions.get(\"macro\", true))
+
+		print(\"[Main3D] Loaded room: %s\" % room_id)
+	else:
+		push_error(\"[Main3D] Failed to load room: %s\" % room_path)
+
+func _on_scale_changed(new_scale: GameManager.Scale) -> void:
+	# Update UI
+	var scale_label = get_node_or_null(\"UI/ScaleIndicator\")
+	if scale_label:
+		scale_label.text = \"Scale: %s\" % GameManager.get_scale_name()
+
+func _on_room_changed(room_id: String) -> void:
+	load_room(room_id)
+"
+
+[node name="Main3D" type="Node3D"]
+script = SubResource("GDScript_main")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="ScaleIndicator" type="Label" parent="UI"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 200.0
+offset_bottom = 50.0
+text = "Scale: NORMAL"
+
+[node name="Notebook" type="Control" parent="UI"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0

@@ -1,0 +1,265 @@
+[gd_scene load_steps=7 format=3 uid="uid://room1_1"]
+
+[ext_resource type="PackedScene" uid="uid://pushblock001" path="res://scenes/objects/pushable_block.tscn" id="1_pushblock"]
+[ext_resource type="Script" path="res://scripts/ui/glyph_display.gd" id="2_glyph"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_h"]
+size = Vector2(512, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_v"]
+size = Vector2(24, 288)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fountain"]
+size = Vector2(56, 56)
+
+[sub_resource type="GDScript" id="GDScript_room"]
+script/source = "extends Node2D
+
+func _ready() -> void:
+	print(\"═══════════════════════════════════════\")
+	print(\"  ROOM 1-1: THE AWAKENING CHAMBER\")
+	print(\"═══════════════════════════════════════\")
+	print(\"You awaken in an ancient temple...\")
+	print(\"A dry fountain sits nearby with a strange symbol.\")
+	print(\"Push the stone block to reach the northern exit.\")
+	print(\"\")
+
+	await get_tree().create_timer(1.5).timeout
+	if GlyphDatabase:
+		GlyphDatabase.discover_glyph(\"AQUA\", \"room_1_1\")
+		print(\"[!] New glyph discovered: AQUA\")
+		print(\"    Press Q to open your notebook.\")
+
+func get_scale_restrictions() -> Dictionary:
+	return { \"micro\": true, \"macro\": false }
+"
+
+[node name="Room_1_1" type="Node2D"]
+script = SubResource("GDScript_room")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 512.0
+offset_bottom = 288.0
+color = Color(0.08, 0.06, 0.05, 1)
+
+[node name="Floor" type="Node2D" parent="."]
+
+[node name="FloorBase" type="ColorRect" parent="Floor"]
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 488.0
+offset_bottom = 264.0
+color = Color(0.18, 0.14, 0.12, 1)
+
+[node name="FloorTile1" type="ColorRect" parent="Floor"]
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 80.0
+offset_bottom = 80.0
+color = Color(0.22, 0.18, 0.15, 1)
+
+[node name="FloorTile2" type="ColorRect" parent="Floor"]
+offset_left = 88.0
+offset_top = 32.0
+offset_right = 136.0
+offset_bottom = 80.0
+color = Color(0.2, 0.16, 0.13, 1)
+
+[node name="FloorTile3" type="ColorRect" parent="Floor"]
+offset_left = 144.0
+offset_top = 32.0
+offset_right = 192.0
+offset_bottom = 80.0
+color = Color(0.22, 0.18, 0.15, 1)
+
+[node name="FloorPattern" type="ColorRect" parent="Floor"]
+offset_left = 200.0
+offset_top = 120.0
+offset_right = 312.0
+offset_bottom = 168.0
+color = Color(0.16, 0.12, 0.1, 1)
+
+[node name="Walls" type="StaticBody2D" parent="."]
+collision_layer = 3
+
+[node name="TopWall" type="CollisionShape2D" parent="Walls"]
+position = Vector2(256, 12)
+shape = SubResource("RectangleShape2D_wall_h")
+
+[node name="TopWallVis" type="ColorRect" parent="Walls/TopWall"]
+offset_left = -256.0
+offset_top = -12.0
+offset_right = 256.0
+offset_bottom = 12.0
+color = Color(0.28, 0.22, 0.18, 1)
+
+[node name="TopWallTrim" type="ColorRect" parent="Walls/TopWall"]
+offset_left = -256.0
+offset_top = 8.0
+offset_right = 256.0
+offset_bottom = 12.0
+color = Color(0.35, 0.28, 0.22, 1)
+
+[node name="BottomWall" type="CollisionShape2D" parent="Walls"]
+position = Vector2(256, 276)
+shape = SubResource("RectangleShape2D_wall_h")
+
+[node name="BottomWallVis" type="ColorRect" parent="Walls/BottomWall"]
+offset_left = -256.0
+offset_top = -12.0
+offset_right = 256.0
+offset_bottom = 12.0
+color = Color(0.28, 0.22, 0.18, 1)
+
+[node name="BottomWallTrim" type="ColorRect" parent="Walls/BottomWall"]
+offset_left = -256.0
+offset_top = -12.0
+offset_right = 256.0
+offset_bottom = -8.0
+color = Color(0.35, 0.28, 0.22, 1)
+
+[node name="LeftWall" type="CollisionShape2D" parent="Walls"]
+position = Vector2(12, 144)
+shape = SubResource("RectangleShape2D_wall_v")
+
+[node name="LeftWallVis" type="ColorRect" parent="Walls/LeftWall"]
+offset_left = -12.0
+offset_top = -144.0
+offset_right = 12.0
+offset_bottom = 144.0
+color = Color(0.28, 0.22, 0.18, 1)
+
+[node name="LeftWallTrim" type="ColorRect" parent="Walls/LeftWall"]
+offset_left = 8.0
+offset_top = -144.0
+offset_right = 12.0
+offset_bottom = 144.0
+color = Color(0.35, 0.28, 0.22, 1)
+
+[node name="RightWall" type="CollisionShape2D" parent="Walls"]
+position = Vector2(500, 144)
+shape = SubResource("RectangleShape2D_wall_v")
+
+[node name="RightWallVis" type="ColorRect" parent="Walls/RightWall"]
+offset_left = -12.0
+offset_top = -144.0
+offset_right = 12.0
+offset_bottom = 144.0
+color = Color(0.28, 0.22, 0.18, 1)
+
+[node name="RightWallTrim" type="ColorRect" parent="Walls/RightWall"]
+offset_left = -12.0
+offset_top = -144.0
+offset_right = -8.0
+offset_bottom = 144.0
+color = Color(0.35, 0.28, 0.22, 1)
+
+[node name="SpawnPoint" type="Marker2D" parent="."]
+position = Vector2(256, 200)
+
+[node name="Fountain" type="StaticBody2D" parent="."]
+position = Vector2(100, 80)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fountain"]
+shape = SubResource("RectangleShape2D_fountain")
+
+[node name="FountainBase" type="ColorRect" parent="Fountain"]
+offset_left = -32.0
+offset_top = -28.0
+offset_right = 32.0
+offset_bottom = 32.0
+color = Color(0.25, 0.22, 0.2, 1)
+
+[node name="FountainRim" type="ColorRect" parent="Fountain"]
+offset_left = -28.0
+offset_top = -24.0
+offset_right = 28.0
+offset_bottom = 28.0
+color = Color(0.32, 0.28, 0.25, 1)
+
+[node name="FountainBasin" type="ColorRect" parent="Fountain"]
+offset_left = -24.0
+offset_top = -20.0
+offset_right = 24.0
+offset_bottom = 24.0
+color = Color(0.12, 0.1, 0.08, 1)
+
+[node name="FountainDry" type="ColorRect" parent="Fountain"]
+offset_left = -20.0
+offset_top = -16.0
+offset_right = 20.0
+offset_bottom = 20.0
+color = Color(0.15, 0.12, 0.1, 1)
+
+[node name="GlyphDisplay" type="Control" parent="Fountain"]
+offset_left = -24.0
+offset_top = -60.0
+offset_right = 24.0
+offset_bottom = -12.0
+script = ExtResource("2_glyph")
+glyph_id = "AQUA"
+glyph_color = Color(0.4, 0.7, 0.9, 1)
+glyph_size = 48.0
+show_background = true
+background_color = Color(0.12, 0.1, 0.08, 0.95)
+
+[node name="PushableBlock" parent="." instance=ExtResource("1_pushblock")]
+position = Vector2(350, 144)
+
+[node name="ExitBlocker" type="StaticBody2D" parent="."]
+position = Vector2(256, 40)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitBlocker"]
+shape = SubResource("RectangleShape2D_fountain")
+
+[node name="BlockerVis" type="ColorRect" parent="ExitBlocker"]
+offset_left = -28.0
+offset_top = -16.0
+offset_right = 28.0
+offset_bottom = 16.0
+color = Color(0.3, 0.25, 0.2, 1)
+
+[node name="BlockerLabel" type="Label" parent="ExitBlocker"]
+offset_left = -50.0
+offset_top = 20.0
+offset_right = 50.0
+offset_bottom = 40.0
+horizontal_alignment = 1
+text = "Push block here"
+
+[node name="ExitDoor" type="Node2D" parent="."]
+position = Vector2(256, 12)
+
+[node name="DoorFrame" type="ColorRect" parent="ExitDoor"]
+offset_left = -24.0
+offset_top = -8.0
+offset_right = 24.0
+offset_bottom = 8.0
+color = Color(0.4, 0.32, 0.25, 1)
+
+[node name="DoorInner" type="ColorRect" parent="ExitDoor"]
+offset_left = -20.0
+offset_top = -4.0
+offset_right = 20.0
+offset_bottom = 4.0
+color = Color(0.2, 0.15, 0.1, 1)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="RoomTitle" type="Label" parent="UI"]
+offset_left = 160.0
+offset_top = 8.0
+offset_right = 352.0
+offset_bottom = 28.0
+horizontal_alignment = 1
+text = "The Awakening Chamber"
+
+[node name="Hint" type="Label" parent="UI"]
+offset_left = 140.0
+offset_top = 260.0
+offset_right = 372.0
+offset_bottom = 280.0
+horizontal_alignment = 1
+text = "WASD: Move | E: Interact | Q: Notebook"

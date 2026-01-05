@@ -1,0 +1,228 @@
+[gd_scene load_steps=6 format=3 uid="uid://room1_7"]
+
+[ext_resource type="PackedScene" uid="uid://controlpanel001" path="res://scenes/objects/control_panel.tscn" id="1_panel"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
+size = Vector2(640, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_side"]
+size = Vector2(32, 360)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_water"]
+size = Vector2(500, 200)
+
+[sub_resource type="GDScript" id="GDScript_room"]
+script/source = "extends Node2D
+## Room 1-7: The Drain Puzzle
+## First room where player uses glyphs to solve a puzzle
+
+var water_drained: bool = false
+var panel: Node = null
+
+func _ready() -> void:
+	print(\"[Room 1-7] The Drain Puzzle\")
+	print(\"[Room 1-7] The room is flooded! The exit door is underwater.\")
+	print(\"[Room 1-7] There's a control panel on the wall and a drainage grate.\")
+
+	# Discover glyphs in this room
+	await get_tree().create_timer(1.0).timeout
+	if GlyphDatabase:
+		GlyphDatabase.discover_glyph(\"DESCENDE\", \"room_1_7\")
+		print(\"[Room 1-7] You notice a symbol on the drainage grate: DESCENDE\")
+
+	# Find and setup control panel
+	panel = $ControlPanel
+	if panel:
+		panel.solution = [\"AQUA\", \"FLOW\", \"DESCENDE\"]
+		panel.panel_description = \"[AQUA] + [FLOW] + [???]\\nMake the water go somewhere...\"
+		panel.panel_solved.connect(_on_panel_solved)
+
+func get_scale_restrictions() -> Dictionary:
+	return { \"micro\": true, \"macro\": false }
+
+func _on_panel_solved(sequence: Array) -> void:
+	if not water_drained:
+		water_drained = true
+		print(\"[Room 1-7] The water begins to drain!\")
+		_drain_water()
+
+func _drain_water() -> void:
+	var water = $Water
+	var water_visual = $WaterVisual
+	var exit_blocker = $ExitBlocker
+
+	if water:
+		# Animate water draining
+		var tween = create_tween()
+		tween.tween_property(water_visual, \"modulate:a\", 0.0, 2.0)
+		tween.parallel().tween_property(water_visual, \"scale:y\", 0.1, 2.0)
+
+		await tween.finished
+
+		# Remove water collision
+		water.queue_free()
+
+		# Remove exit blocker
+		if exit_blocker:
+			exit_blocker.queue_free()
+
+		print(\"[Room 1-7] The water has drained! The exit is now accessible.\")
+		$ExitDoor/DoorLabel.text = \"Exit Open\"
+		$ExitDoor/Visual.modulate = Color(0.3, 0.6, 0.3, 1)
+"
+
+[node name="Room_1_7" type="Node2D"]
+script = SubResource("GDScript_room")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 640.0
+offset_bottom = 360.0
+color = Color(0.1, 0.12, 0.15, 1)
+
+[node name="Floor" type="ColorRect" parent="."]
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 608.0
+offset_bottom = 328.0
+color = Color(0.18, 0.2, 0.22, 1)
+
+[node name="Walls" type="StaticBody2D" parent="."]
+collision_layer = 3
+
+[node name="TopWall" type="CollisionShape2D" parent="Walls"]
+position = Vector2(320, 16)
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="TopWallVisual" type="ColorRect" parent="Walls/TopWall"]
+offset_left = -320.0
+offset_top = -16.0
+offset_right = 320.0
+offset_bottom = 16.0
+color = Color(0.25, 0.25, 0.28, 1)
+
+[node name="BottomWall" type="CollisionShape2D" parent="Walls"]
+position = Vector2(320, 344)
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="BottomWallVisual" type="ColorRect" parent="Walls/BottomWall"]
+offset_left = -320.0
+offset_top = -16.0
+offset_right = 320.0
+offset_bottom = 16.0
+color = Color(0.25, 0.25, 0.28, 1)
+
+[node name="LeftWall" type="CollisionShape2D" parent="Walls"]
+position = Vector2(16, 180)
+shape = SubResource("RectangleShape2D_side")
+
+[node name="LeftWallVisual" type="ColorRect" parent="Walls/LeftWall"]
+offset_left = -16.0
+offset_top = -180.0
+offset_right = 16.0
+offset_bottom = 180.0
+color = Color(0.25, 0.25, 0.28, 1)
+
+[node name="RightWall" type="CollisionShape2D" parent="Walls"]
+position = Vector2(624, 180)
+shape = SubResource("RectangleShape2D_side")
+
+[node name="RightWallVisual" type="ColorRect" parent="Walls/RightWall"]
+offset_left = -16.0
+offset_top = -180.0
+offset_right = 16.0
+offset_bottom = 180.0
+color = Color(0.25, 0.25, 0.28, 1)
+
+[node name="SpawnPoint" type="Marker2D" parent="."]
+position = Vector2(100, 100)
+
+[node name="Water" type="StaticBody2D" parent="."]
+position = Vector2(350, 230)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Water"]
+shape = SubResource("RectangleShape2D_water")
+
+[node name="WaterVisual" type="ColorRect" parent="."]
+offset_left = 100.0
+offset_top = 130.0
+offset_right = 600.0
+offset_bottom = 330.0
+color = Color(0.2, 0.4, 0.6, 0.7)
+
+[node name="WaterLabel" type="Label" parent="WaterVisual"]
+offset_left = 150.0
+offset_top = 80.0
+offset_right = 350.0
+offset_bottom = 110.0
+horizontal_alignment = 1
+text = "~ Flooded Area ~"
+
+[node name="DrainageGrate" type="Node2D" parent="."]
+position = Vector2(550, 300)
+
+[node name="Visual" type="ColorRect" parent="DrainageGrate"]
+offset_left = -30.0
+offset_top = -15.0
+offset_right = 30.0
+offset_bottom = 15.0
+color = Color(0.3, 0.3, 0.35, 1)
+
+[node name="GlyphLabel" type="Label" parent="DrainageGrate"]
+offset_left = -40.0
+offset_top = -35.0
+offset_right = 40.0
+offset_bottom = -15.0
+horizontal_alignment = 1
+text = "DESCENDE"
+
+[node name="Hint" type="Label" parent="DrainageGrate"]
+offset_left = -40.0
+offset_top = 20.0
+offset_right = 40.0
+offset_bottom = 40.0
+horizontal_alignment = 1
+text = "(Drain)"
+
+[node name="ControlPanel" parent="." instance=ExtResource("1_panel")]
+position = Vector2(60, 180)
+
+[node name="PanelHint" type="Label" parent="."]
+offset_left = 32.0
+offset_top = 240.0
+offset_right = 120.0
+offset_bottom = 280.0
+text = "Hint: AQUA\n+ FLOW + ?"
+
+[node name="ExitBlocker" type="StaticBody2D" parent="."]
+position = Vector2(320, 50)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitBlocker"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="ExitDoor" type="Area2D" parent="."]
+position = Vector2(320, 32)
+
+[node name="Visual" type="ColorRect" parent="ExitDoor"]
+offset_left = -24.0
+offset_top = -16.0
+offset_right = 24.0
+offset_bottom = 0.0
+color = Color(0.4, 0.3, 0.3, 1)
+
+[node name="DoorLabel" type="Label" parent="ExitDoor"]
+offset_left = -50.0
+offset_top = -35.0
+offset_right = 50.0
+offset_bottom = -15.0
+horizontal_alignment = 1
+text = "Exit (Blocked)"
+
+[node name="TutorialHint" type="Label" parent="."]
+offset_left = 180.0
+offset_top = 320.0
+offset_right = 460.0
+offset_bottom = 350.0
+horizontal_alignment = 1
+text = "Use the panel to drain the water!"

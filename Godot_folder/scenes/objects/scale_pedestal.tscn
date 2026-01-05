@@ -1,0 +1,66 @@
+[gd_scene load_steps=3 format=3 uid="uid://pedestal001"]
+
+[ext_resource type="Script" path="res://scripts/objects/scale_pedestal.gd" id="1_pedestal"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pedestal"]
+radius = 20.0
+
+[node name="ScalePedestal" type="Area2D"]
+collision_layer = 16
+collision_mask = 1
+script = ExtResource("1_pedestal")
+
+[node name="Sprite2D" type="Node2D" parent="."]
+
+[node name="Shadow" type="ColorRect" parent="Sprite2D"]
+offset_left = -18.0
+offset_top = -14.0
+offset_right = 22.0
+offset_bottom = 26.0
+color = Color(0, 0, 0, 0.3)
+
+[node name="Base" type="ColorRect" parent="Sprite2D"]
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+color = Color(0.35, 0.3, 0.4, 1)
+
+[node name="Middle" type="ColorRect" parent="Sprite2D"]
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+color = Color(0.45, 0.4, 0.55, 1)
+
+[node name="Top" type="ColorRect" parent="Sprite2D"]
+offset_left = -12.0
+offset_top = -12.0
+offset_right = 12.0
+offset_bottom = 12.0
+color = Color(0.55, 0.5, 0.7, 1)
+
+[node name="GlowEffect" type="ColorRect" parent="Sprite2D"]
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+color = Color(0.6, 0.85, 0.95, 0.7)
+
+[node name="InnerGlow" type="ColorRect" parent="Sprite2D"]
+offset_left = -6.0
+offset_top = -6.0
+offset_right = 6.0
+offset_bottom = 6.0
+color = Color(0.8, 0.95, 1, 0.9)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_pedestal")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -50.0
+offset_top = 25.0
+offset_right = 50.0
+offset_bottom = 45.0
+horizontal_alignment = 1
+text = "[SHIFT] to scale"

@@ -1,0 +1,128 @@
+[gd_scene load_steps=2 format=3 uid="uid://notebook001"]
+
+[ext_resource type="Script" path="res://scripts/systems/notebook_system.gd" id="1_notebook"]
+
+[node name="Notebook" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_notebook")
+
+[node name="Dimmer" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -250.0
+offset_right = 350.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 690.0
+offset_bottom = 40.0
+horizontal_alignment = 1
+text = "~ NOTEBOOK ~"
+
+[node name="CloseHint" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 550.0
+offset_top = 10.0
+offset_right = 690.0
+offset_bottom = 35.0
+horizontal_alignment = 2
+text = "[Q] or [Esc] to close"
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 45.0
+offset_right = 690.0
+offset_bottom = 490.0
+
+[node name="HSplitContainer" type="HSplitContainer" parent="Panel/MarginContainer"]
+layout_mode = 2
+split_offset = 200
+
+[node name="GlyphList" type="PanelContainer" parent="Panel/MarginContainer/HSplitContainer"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel/MarginContainer/HSplitContainer/GlyphList"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer/HSplitContainer/GlyphList/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ListHeader" type="Label" parent="Panel/MarginContainer/HSplitContainer/GlyphList/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "Discovered Glyphs:"
+
+[node name="Separator" type="HSeparator" parent="Panel/MarginContainer/HSplitContainer/GlyphList/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="GlyphDetails" type="VBoxContainer" parent="Panel/MarginContainer/HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DetailsHeader" type="Label" parent="Panel/MarginContainer/HSplitContainer/GlyphDetails"]
+layout_mode = 2
+text = "Glyph Details"
+
+[node name="Separator" type="HSeparator" parent="Panel/MarginContainer/HSplitContainer/GlyphDetails"]
+layout_mode = 2
+
+[node name="GlyphName" type="Label" parent="Panel/MarginContainer/HSplitContainer/GlyphDetails"]
+layout_mode = 2
+text = "Select a glyph..."
+
+[node name="Category" type="Label" parent="Panel/MarginContainer/HSplitContainer/GlyphDetails"]
+layout_mode = 2
+text = "Category: -"
+
+[node name="Hint" type="Label" parent="Panel/MarginContainer/HSplitContainer/GlyphDetails"]
+layout_mode = 2
+autowrap_mode = 2
+text = "Hint: Select a glyph to see details"
+
+[node name="Separator2" type="HSeparator" parent="Panel/MarginContainer/HSplitContainer/GlyphDetails"]
+layout_mode = 2
+
+[node name="Meaning" type="Label" parent="Panel/MarginContainer/HSplitContainer/GlyphDetails"]
+layout_mode = 2
+text = "Meaning: ???"
+
+[node name="HypothesisLabel" type="Label" parent="Panel/MarginContainer/HSplitContainer/GlyphDetails"]
+layout_mode = 2
+text = "Your hypothesis:"
+
+[node name="HypothesisInput" type="LineEdit" parent="Panel/MarginContainer/HSplitContainer/GlyphDetails"]
+layout_mode = 2
+placeholder_text = "Type your guess and press Enter..."
+
+[node name="Separator3" type="HSeparator" parent="Panel/MarginContainer/HSplitContainer/GlyphDetails"]
+layout_mode = 2
+
+[node name="Locations" type="Label" parent="Panel/MarginContainer/HSplitContainer/GlyphDetails"]
+layout_mode = 2
+autowrap_mode = 2
+text = "Found: -"

@@ -1,0 +1,51 @@
+[gd_scene load_steps=3 format=3 uid="uid://pushblock001"]
+
+[ext_resource type="Script" path="res://scripts/objects/pushable_block.gd" id="1_block"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_block"]
+size = Vector2(30, 30)
+
+[node name="PushableBlock" type="CharacterBody2D"]
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("1_block")
+
+[node name="Visual" type="Node2D" parent="."]
+
+[node name="Shadow" type="ColorRect" parent="Visual"]
+offset_left = -13.0
+offset_top = -11.0
+offset_right = 17.0
+offset_bottom = 19.0
+color = Color(0.1, 0.08, 0.06, 0.5)
+
+[node name="Base" type="ColorRect" parent="Visual"]
+offset_left = -15.0
+offset_top = -15.0
+offset_right = 15.0
+offset_bottom = 15.0
+color = Color(0.45, 0.35, 0.25, 1)
+
+[node name="Top" type="ColorRect" parent="Visual"]
+offset_left = -13.0
+offset_top = -13.0
+offset_right = 13.0
+offset_bottom = 13.0
+color = Color(0.6, 0.5, 0.38, 1)
+
+[node name="Highlight" type="ColorRect" parent="Visual"]
+offset_left = -13.0
+offset_top = -13.0
+offset_right = -8.0
+offset_bottom = 8.0
+color = Color(0.7, 0.6, 0.48, 0.5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_block")
+
+[node name="InteractionArea" type="Area2D" parent="."]
+collision_layer = 32
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+shape = SubResource("RectangleShape2D_block")

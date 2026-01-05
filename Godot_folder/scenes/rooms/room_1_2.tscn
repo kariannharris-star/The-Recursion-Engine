@@ -1,0 +1,215 @@
+[gd_scene load_steps=6 format=3 uid="uid://room1_2"]
+
+[ext_resource type="PackedScene" uid="uid://pedestal001" path="res://scenes/objects/scale_pedestal.tscn" id="1_pedestal"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
+size = Vector2(640, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_side"]
+size = Vector2(32, 360)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_crack"]
+size = Vector2(8, 40)
+
+[sub_resource type="GDScript" id="GDScript_room"]
+script/source = "extends Node2D
+## Room 1-2: The First Pedestal
+## Player learns to use scale shifting
+
+var player_passed_through_crack: bool = false
+var door_unlocked: bool = false
+
+func _ready() -> void:
+	print(\"[Room 1-2] The First Pedestal\")
+	print(\"[Room 1-2] A glowing pedestal sits in the center.\")
+	print(\"[Room 1-2] There's a small crack in the eastern wall...\")
+
+	# Connect to scale changes
+	if GameManager:
+		GameManager.scale_changed.connect(_on_scale_changed)
+
+func get_scale_restrictions() -> Dictionary:
+	return { \"micro\": true, \"macro\": false }
+
+func _on_scale_changed(new_scale) -> void:
+	print(\"[Room 1-2] You are now at %s scale\" % GameManager.get_scale_name())
+
+	if new_scale == GameManager.Scale.MICRO:
+		print(\"[Room 1-2] You feel tiny! The crack in the wall now looks passable...\")
+	elif new_scale == GameManager.Scale.NORMAL:
+		print(\"[Room 1-2] You return to normal size.\")
+
+func _on_secret_area_entered(body: Node2D) -> void:
+	if body.name == \"Player\" and not player_passed_through_crack:
+		player_passed_through_crack = true
+		print(\"[Room 1-2] You found a hidden inscription!\")
+		if GlyphDatabase:
+			GlyphDatabase.discover_glyph(\"PARVUS\", \"room_1_2_secret\")
+		_unlock_door()
+
+func _unlock_door() -> void:
+	if not door_unlocked:
+		door_unlocked = true
+		print(\"[Room 1-2] The exit door unlocks!\")
+		$ExitDoor/Visual.modulate = Color(0.3, 0.6, 0.3, 1)  # Green = unlocked
+"
+
+[node name="Room_1_2" type="Node2D"]
+script = SubResource("GDScript_room")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 800.0
+offset_bottom = 360.0
+color = Color(0.12, 0.12, 0.15, 1)
+
+[node name="MainFloor" type="ColorRect" parent="."]
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 608.0
+offset_bottom = 328.0
+color = Color(0.22, 0.2, 0.22, 1)
+
+[node name="SecretFloor" type="ColorRect" parent="."]
+offset_left = 640.0
+offset_top = 100.0
+offset_right = 768.0
+offset_bottom = 260.0
+color = Color(0.18, 0.16, 0.2, 1)
+
+[node name="Walls" type="StaticBody2D" parent="."]
+collision_layer = 3
+
+[node name="TopWall" type="CollisionShape2D" parent="Walls"]
+position = Vector2(320, 16)
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="TopWallVisual" type="ColorRect" parent="Walls/TopWall"]
+offset_left = -320.0
+offset_top = -16.0
+offset_right = 320.0
+offset_bottom = 16.0
+color = Color(0.25, 0.22, 0.25, 1)
+
+[node name="BottomWall" type="CollisionShape2D" parent="Walls"]
+position = Vector2(320, 344)
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="BottomWallVisual" type="ColorRect" parent="Walls/BottomWall"]
+offset_left = -320.0
+offset_top = -16.0
+offset_right = 320.0
+offset_bottom = 16.0
+color = Color(0.25, 0.22, 0.25, 1)
+
+[node name="LeftWall" type="CollisionShape2D" parent="Walls"]
+position = Vector2(16, 180)
+shape = SubResource("RectangleShape2D_side")
+
+[node name="LeftWallVisual" type="ColorRect" parent="Walls/LeftWall"]
+offset_left = -16.0
+offset_top = -180.0
+offset_right = 16.0
+offset_bottom = 180.0
+color = Color(0.25, 0.22, 0.25, 1)
+
+[node name="RightWallTop" type="CollisionShape2D" parent="Walls"]
+position = Vector2(624, 60)
+shape = SubResource("RectangleShape2D_crack")
+disabled = false
+
+[node name="RightWallTopVisual" type="ColorRect" parent="Walls/RightWallTop"]
+offset_left = -16.0
+offset_top = -60.0
+offset_right = 16.0
+offset_bottom = 40.0
+color = Color(0.25, 0.22, 0.25, 1)
+
+[node name="RightWallBottom" type="CollisionShape2D" parent="Walls"]
+position = Vector2(624, 300)
+shape = SubResource("RectangleShape2D_crack")
+disabled = false
+
+[node name="RightWallBottomVisual" type="ColorRect" parent="Walls/RightWallBottom"]
+offset_left = -16.0
+offset_top = -40.0
+offset_right = 16.0
+offset_bottom = 60.0
+color = Color(0.25, 0.22, 0.25, 1)
+
+[node name="CrackWall" type="StaticBody2D" parent="."]
+position = Vector2(624, 180)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CrackWall"]
+shape = SubResource("RectangleShape2D_crack")
+
+[node name="CrackVisual" type="ColorRect" parent="CrackWall"]
+offset_left = -4.0
+offset_top = -20.0
+offset_right = 4.0
+offset_bottom = 20.0
+color = Color(0.1, 0.1, 0.12, 1)
+
+[node name="CrackLabel" type="Label" parent="CrackWall"]
+offset_left = -60.0
+offset_top = 25.0
+offset_right = -10.0
+offset_bottom = 45.0
+text = "Crack"
+
+[node name="SpawnPoint" type="Marker2D" parent="."]
+position = Vector2(100, 180)
+
+[node name="ScalePedestal" parent="." instance=ExtResource("1_pedestal")]
+position = Vector2(320, 180)
+
+[node name="SecretPedestal" parent="." instance=ExtResource("1_pedestal")]
+position = Vector2(700, 180)
+
+[node name="SecretAreaTrigger" type="Area2D" parent="."]
+position = Vector2(700, 180)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SecretAreaTrigger"]
+shape = SubResource("RectangleShape2D_crack")
+
+[node name="SecretInscription" type="Label" parent="."]
+offset_left = 660.0
+offset_top = 120.0
+offset_right = 760.0
+offset_bottom = 150.0
+horizontal_alignment = 1
+text = "PARVUS"
+
+[node name="SecretHint" type="Label" parent="."]
+offset_left = 650.0
+offset_top = 220.0
+offset_right = 770.0
+offset_bottom = 250.0
+horizontal_alignment = 1
+text = "(Small)"
+
+[node name="ExitDoor" type="Area2D" parent="."]
+position = Vector2(320, 32)
+
+[node name="Visual" type="ColorRect" parent="ExitDoor"]
+offset_left = -24.0
+offset_top = -16.0
+offset_right = 24.0
+offset_bottom = 0.0
+color = Color(0.5, 0.3, 0.3, 1)
+
+[node name="DoorLabel" type="Label" parent="ExitDoor"]
+offset_left = -40.0
+offset_top = -35.0
+offset_right = 40.0
+offset_bottom = -15.0
+horizontal_alignment = 1
+text = "Locked"
+
+[node name="TutorialHint" type="Label" parent="."]
+offset_left = 200.0
+offset_top = 320.0
+offset_right = 440.0
+offset_bottom = 350.0
+horizontal_alignment = 1
+text = "Step on pedestal, press SHIFT to shrink"

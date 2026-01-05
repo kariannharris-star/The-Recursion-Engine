@@ -1,0 +1,139 @@
+[gd_scene load_steps=4 format=3 uid="uid://main001"]
+
+[ext_resource type="PackedScene" uid="uid://player001" path="res://scenes/player/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" uid="uid://notebook001" path="res://scenes/ui/notebook.tscn" id="2_notebook"]
+
+[sub_resource type="GDScript" id="GDScript_main"]
+script/source = "extends Node2D
+## Main Game Scene - Entry point that manages the current room and UI
+
+@onready var player: Player = $Player
+@onready var scale_label: Label = $UI/ScaleIndicator
+@onready var notebook: Control = $UI/Notebook
+
+var current_room: Node2D = null
+var room_container: Node2D
+
+func _ready() -> void:
+	# Create room container
+	room_container = Node2D.new()
+	room_container.name = \"RoomContainer\"
+	add_child(room_container)
+	move_child(room_container, 0)  # Put rooms behind player
+
+	# Connect to game manager signals
+	if GameManager:
+		GameManager.scale_changed.connect(_on_scale_changed)
+		GameManager.room_changed.connect(_on_room_changed)
+
+	# Load the first room
+	load_room(\"room_1_1\")
+
+	# Initial UI update
+	_update_scale_label()
+
+	print(\"======================================\")
+	print(\"  THE RECURSION ENGINE - Tutorial\")
+	print(\"======================================\")
+	print(\"\")
+	print(\"Controls:\")
+	print(\"  WASD/Arrows - Move\")
+	print(\"  E/Space     - Interact\")
+	print(\"  Shift       - Scale shift (on pedestal)\")
+	print(\"  Q           - Open Notebook\")
+	print(\"  Esc         - Pause\")
+	print(\"\")
+	print(\"======================================\")
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed(\"pause\"):
+		if GameManager.current_state == GameManager.GameState.PAUSED:
+			GameManager.resume_game()
+		else:
+			GameManager.pause_game()
+
+func load_room(room_id: String) -> void:
+	# Clear current room
+	for child in room_container.get_children():
+		child.queue_free()
+
+	# Wait a frame for cleanup
+	await get_tree().process_frame
+
+	# Load new room
+	var room_path = \"res://scenes/rooms/%s.tscn\" % room_id
+	var room_scene = load(room_path)
+
+	if room_scene:
+		current_room = room_scene.instantiate()
+		room_container.add_child(current_room)
+
+		# Find spawn point
+		var spawn = current_room.get_node_or_null(\"SpawnPoint\")
+		if spawn:
+			player.global_position = spawn.global_position
+		else:
+			player.global_position = Vector2(320, 180)
+
+		# Apply room restrictions
+		if current_room.has_method(\"get_scale_restrictions\"):
+			var restrictions = current_room.get_scale_restrictions()
+			player.set_room_restrictions(restrictions.get(\"micro\", true), restrictions.get(\"macro\", true))
+
+		print(\"[Main] Loaded room: %s\" % room_id)
+	else:
+		push_error(\"[Main] Failed to load room: %s\" % room_path)
+
+func _on_scale_changed(new_scale: GameManager.Scale) -> void:
+	_update_scale_label()
+
+func _on_room_changed(room_id: String) -> void:
+	load_room(room_id)
+
+func _update_scale_label() -> void:
+	if scale_label and GameManager:
+		var scale_name = GameManager.get_scale_name()
+		scale_label.text = \"Scale: %s\" % scale_name
+
+		# Color code the scale
+		match GameManager.current_scale:
+			GameManager.Scale.NORMAL:
+				scale_label.modulate = Color(1, 1, 1, 1)
+			GameManager.Scale.MICRO:
+				scale_label.modulate = Color(0.5, 0.8, 1, 1)  # Light blue
+			GameManager.Scale.MACRO:
+				scale_label.modulate = Color(1, 0.6, 0.4, 1)  # Orange
+"
+
+[node name="Main" type="Node2D"]
+script = SubResource("GDScript_main")
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+position = Vector2(320, 180)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="ScaleIndicator" type="Label" parent="UI"]
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 200.0
+offset_bottom = 40.0
+text = "Scale: NORMAL"
+
+[node name="GlyphNotification" type="Label" parent="UI"]
+offset_left = 10.0
+offset_top = 45.0
+offset_right = 300.0
+offset_bottom = 75.0
+modulate = Color(1, 1, 0.5, 1)
+text = ""
+
+[node name="HelpText" type="Label" parent="UI"]
+offset_left = 10.0
+offset_top = 680.0
+offset_right = 500.0
+offset_bottom = 710.0
+text = "WASD: Move | E: Interact | Shift: Scale (on pedestal) | Q: Notebook"
+
+[node name="Notebook" parent="UI" instance=ExtResource("2_notebook")]
+visible = false
