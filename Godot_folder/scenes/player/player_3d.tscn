@@ -1,58 +1,176 @@
-[gd_scene load_steps=7 format=3 uid="uid://player3d001"]
+[gd_scene load_steps=12 format=3 uid="uid://player3d001"]
 
 [ext_resource type="Script" path="res://scripts/player/player_3d.gd" id="1_player"]
 
+; === COLLISION SHAPES ===
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
-radius = 0.3
-height = 0.8
+radius = 0.25
+height = 1.4
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_interact"]
-size = Vector3(0.6, 0.6, 0.6)
+size = Vector3(0.8, 0.8, 0.8)
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_body"]
-radius = 0.3
-height = 0.8
+; === MATERIALS ===
+[sub_resource type="StandardMaterial3D" id="Mat_skin"]
+albedo_color = Color(0.85, 0.7, 0.55, 1)
+roughness = 0.8
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
-albedo_color = Color(0.3, 0.5, 0.85, 1)
-metallic = 0.2
-roughness = 0.6
+[sub_resource type="StandardMaterial3D" id="Mat_clothes"]
+albedo_color = Color(0.2, 0.35, 0.5, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="Mat_clothes_light"]
+albedo_color = Color(0.3, 0.45, 0.6, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="Mat_hair"]
+albedo_color = Color(0.15, 0.1, 0.08, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Mat_glow_accent"]
+albedo_color = Color(0.2, 0.7, 0.85, 1)
 emission_enabled = true
-emission = Color(0.2, 0.35, 0.6, 1)
-emission_energy_multiplier = 0.3
+emission = Color(0.15, 0.6, 0.75, 1)
+emission_energy_multiplier = 1.5
 
-[sub_resource type="SphereMesh" id="SphereMesh_eye"]
-radius = 0.08
-height = 0.16
+[sub_resource type="StandardMaterial3D" id="Mat_boots"]
+albedo_color = Color(0.25, 0.2, 0.15, 1)
+roughness = 0.85
 
+[sub_resource type="StandardMaterial3D" id="Mat_belt"]
+albedo_color = Color(0.3, 0.25, 0.2, 1)
+roughness = 0.75
+metallic = 0.2
+
+[sub_resource type="StandardMaterial3D" id="Mat_eye"]
+albedo_color = Color(0.1, 0.1, 0.1, 1)
+
+; === PLAYER NODE ===
 [node name="Player3D" type="CharacterBody3D"]
 collision_layer = 1
 collision_mask = 3
 script = ExtResource("1_player")
 
+; === MESH CONTAINER (rotates with movement) ===
 [node name="Mesh" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
-[node name="Body" type="MeshInstance3D" parent="Mesh"]
-mesh = SubResource("CapsuleMesh_body")
-surface_material_override/0 = SubResource("StandardMaterial3D_body")
+; --- HEAD ---
+[node name="Head" type="CSGSphere3D" parent="Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0)
+radius = 0.18
+radial_segments = 16
+rings = 8
+material = SubResource("Mat_skin")
 
-[node name="Eye1" type="MeshInstance3D" parent="Mesh"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, 0.15, -0.25)
-mesh = SubResource("SphereMesh_eye")
+; --- HAIR ---
+[node name="Hair" type="CSGSphere3D" parent="Mesh"]
+transform = Transform3D(1.1, 0, 0, 0, 0.9, 0, 0, 0, 1.1, 0, 1.52, 0)
+radius = 0.17
+radial_segments = 12
+rings = 6
+material = SubResource("Mat_hair")
 
-[node name="Eye2" type="MeshInstance3D" parent="Mesh"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, 0.15, -0.25)
-mesh = SubResource("SphereMesh_eye")
+; --- EYES ---
+[node name="EyeL" type="CSGSphere3D" parent="Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.06, 1.47, -0.14)
+radius = 0.03
+material = SubResource("Mat_eye")
 
+[node name="EyeR" type="CSGSphere3D" parent="Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06, 1.47, -0.14)
+radius = 0.03
+material = SubResource("Mat_eye")
+
+; --- TORSO ---
+[node name="Torso" type="CSGBox3D" parent="Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
+size = Vector3(0.35, 0.5, 0.2)
+material = SubResource("Mat_clothes")
+
+; --- TUNIC/SHIRT BOTTOM ---
+[node name="TunicBottom" type="CSGBox3D" parent="Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.72, 0)
+size = Vector3(0.38, 0.2, 0.22)
+material = SubResource("Mat_clothes_light")
+
+; --- BELT ---
+[node name="Belt" type="CSGBox3D" parent="Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.78, 0)
+size = Vector3(0.36, 0.06, 0.21)
+material = SubResource("Mat_belt")
+
+; --- BELT GLOW ACCENT ---
+[node name="BeltGlow" type="CSGBox3D" parent="Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.78, -0.11)
+size = Vector3(0.08, 0.04, 0.02)
+material = SubResource("Mat_glow_accent")
+
+; --- ARMS ---
+[node name="ArmL" type="CSGBox3D" parent="Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 1.0, 0)
+size = Vector3(0.12, 0.4, 0.12)
+material = SubResource("Mat_clothes")
+
+[node name="ArmR" type="CSGBox3D" parent="Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1.0, 0)
+size = Vector3(0.12, 0.4, 0.12)
+material = SubResource("Mat_clothes")
+
+; --- HANDS ---
+[node name="HandL" type="CSGSphere3D" parent="Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 0.75, 0)
+radius = 0.06
+material = SubResource("Mat_skin")
+
+[node name="HandR" type="CSGSphere3D" parent="Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 0.75, 0)
+radius = 0.06
+material = SubResource("Mat_skin")
+
+; --- LEGS ---
+[node name="LegL" type="CSGBox3D" parent="Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 0.4, 0)
+size = Vector3(0.14, 0.5, 0.14)
+material = SubResource("Mat_clothes")
+
+[node name="LegR" type="CSGBox3D" parent="Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.4, 0)
+size = Vector3(0.14, 0.5, 0.14)
+material = SubResource("Mat_clothes")
+
+; --- BOOTS ---
+[node name="BootL" type="CSGBox3D" parent="Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 0.1, -0.02)
+size = Vector3(0.14, 0.2, 0.2)
+material = SubResource("Mat_boots")
+
+[node name="BootR" type="CSGBox3D" parent="Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.1, -0.02)
+size = Vector3(0.14, 0.2, 0.2)
+material = SubResource("Mat_boots")
+
+; === COLLISION ===
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 shape = SubResource("CapsuleShape3D_body")
 
+; === INTERACTION AREA ===
 [node name="InteractionArea" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -0.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, -0.6)
 collision_layer = 0
 collision_mask = 54
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionArea"]
 shape = SubResource("BoxShape3D_interact")
+
+; === CAMERA (follows player) ===
+[node name="CameraArm" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CameraArm"]
+transform = Transform3D(1, 0, 0, 0, 0.7, 0.714, 0, -0.714, 0.7, 0, 7, 6)
+projection = 1
+size = 9.0
+near = 0.1
+far = 100.0
