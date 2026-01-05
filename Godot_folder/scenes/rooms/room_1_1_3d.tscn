@@ -275,31 +275,36 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.3, 0)
 size = Vector3(5.2, 1, 1.2)
 material = SubResource("Mat_arch")
 
-; Glowing portal surface (the exit)
+; Glowing portal surface (the exit) - NO COLLISION so player can pass
 [node name="PortalGlow" type="CSGBox3D" parent="ExitArchway"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0.3)
+use_collision = false
 size = Vector3(2.6, 4.5, 0.1)
 material = SubResource("Mat_portal_glow")
 
-; Portal frame glow
+; Portal frame glow - NO COLLISION
 [node name="FrameGlowLeft" type="CSGBox3D" parent="ExitArchway"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.35, 2.5, 0.5)
+use_collision = false
 size = Vector3(0.1, 4.2, 0.05)
 material = SubResource("Mat_circuit_glow")
 
 [node name="FrameGlowRight" type="CSGBox3D" parent="ExitArchway"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.35, 2.5, 0.5)
+use_collision = false
 size = Vector3(0.1, 4.2, 0.05)
 material = SubResource("Mat_circuit_glow")
 
 [node name="FrameGlowTop" type="CSGBox3D" parent="ExitArchway"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0.5)
+use_collision = false
 size = Vector3(2.8, 0.1, 0.05)
 material = SubResource("Mat_circuit_glow")
 
-; Inner ring decoration
+; Inner ring decoration - NO COLLISION
 [node name="InnerRing" type="CSGTorus3D" parent="ExitArchway"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 2.5, 0.4)
+use_collision = false
 inner_radius = 1.0
 outer_radius = 1.2
 ring_sides = 24
