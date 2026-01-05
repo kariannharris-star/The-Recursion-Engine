@@ -5,7 +5,7 @@ class_name Player3D
 const MOVE_SPEED := 5.0
 const SCALE_TRANSITION_TIME := 0.3
 
-@onready var mesh: MeshInstance3D = $Mesh
+@onready var mesh: Node3D = $Mesh
 @onready var collision: CollisionShape3D = $CollisionShape3D
 @onready var interaction_area: Area3D = $InteractionArea
 
